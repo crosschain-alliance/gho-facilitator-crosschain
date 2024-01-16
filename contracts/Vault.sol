@@ -35,6 +35,7 @@ contract Vault is IVault, Committer, Prover {
         GHO = gho;
     }
 
+    /// @inheritdoc IVault
     function canBeLiquidated(address asset, address account) public view returns (bool) {
         uint256 priceCollateralUsd = PRICE_ORACLE.getAssetPrice(address(asset));
         uint256 priceGhoUsd = PRICE_ORACLE.getAssetPrice(GHO);
@@ -43,6 +44,7 @@ contract Vault is IVault, Committer, Prover {
         return debtUsd > (collateralUsd * LTV) / LTV_DIVISOR;
     }
 
+    // @inheritdoc IVault
     function mint(address asset, address account, uint256 amount) external {
         IERC20(asset).transferFrom(msg.sender, address(this), amount);
         _collaterals[asset][account] += amount;
@@ -59,6 +61,7 @@ contract Vault is IVault, Committer, Prover {
         emit AuthorizedMint(account, amountToMint);
     }
 
+    // @inheritdoc IVault
     function liquidate(
         address asset,
         address account,
@@ -78,12 +81,14 @@ contract Vault is IVault, Committer, Prover {
         emit Liquidated(asset, account, liquidator, amount);
     }
 
+    // @inheritdoc IVault
     function withdrawLeftCollateral(address asset, address account) external {
         if (_debts[asset][account] != 0) revert ImpossibleToWithdrawCollateralLeft();
         _collaterals[asset][account] = 0;
         IERC20(asset).transfer(account, _collaterals[asset][account]);
     }
 
+    // @inheritdoc IVault
     function verifyBurnAndReleaseCollateral(
         address asset,
         address account,

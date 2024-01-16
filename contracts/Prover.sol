@@ -2,12 +2,13 @@
 
 pragma solidity ^0.8.20;
 
+import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { RLPReader } from "solidity-rlp/contracts/RLPReader.sol";
 import { MerklePatriciaProofVerifier } from "./libraries/MerklePatriciaProofVerifier.sol";
 import { IGiriGiriBashi } from "./interfaces/hashi/IGiriGiriBashi.sol";
 import { IProver } from "./interfaces/IProver.sol";
 
-contract Prover is IProver {
+contract Prover is IProver, Ownable {
     using RLPReader for RLPReader.RLPItem;
     using RLPReader for bytes;
 
@@ -18,13 +19,14 @@ contract Prover is IProver {
 
     uint256 public expectedNonce;
 
-    constructor(uint256 sourceChainId, uint256 commitmentsSlot, address giriGiriBashi) {
+    constructor(uint256 sourceChainId, uint256 commitmentsSlot, address giriGiriBashi) Ownable(msg.sender) {
         SOURCE_CHAIN_ID = sourceChainId;
         COMMITMENTS_SLOT = commitmentsSlot;
         GIRI_GIRI_BASHI = giriGiriBashi;
     }
 
-    function setAccount(address account) external /*onlyOwner*/ {
+    // @inheritdoc IProver
+    function setAccount(address account) external onlyOwner {
         ACCOUNT = account;
     }
 

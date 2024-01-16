@@ -19,4 +19,6 @@ interface IProver {
         bytes accountProof;
         bytes storageProof;
     }
+
+    function setAccount(address account) external;
 }

@@ -1,0 +1,43 @@
+{
+  "name": "gho-facilitator-crosschain",
+  "license": "MIT",
+  "author": "crosschain-alliance",
+  "scripts": {
+    "compile": "hardhat compile",
+    "lint": "npm run lint:sol && npm run lint:ts",
+    "lint:sol": "solhint --max-warnings 0 \"contracts/**/*.sol\"",
+    "lint:ts": "eslint --ignore-path ./.eslintignore --ext .js,.ts .",
+    "postinstall": "husky install && patch-package",
+    "prettier:write": "prettier --write \"**/*.{js,json,md,sol,ts,yml}\"",
+    "test": "hardhat test"
+  },
+  "dependencies": {
+    "@ethereumjs/rlp": "^5.0.1",
+    "@ethereumjs/trie": "^6.0.1",
+    "@ethereumjs/util": "^9.0.1",
+    "@nomicfoundation/hardhat-chai-matchers": "^1.0.4",
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.8",
+    "@nomicfoundation/hardhat-toolbox": "^2.0.0",
+    "@openzeppelin/contracts": "^5.0.1",
+    "dotenv": "^16.3.1",
+    "ethers": "^5.7.2",
+    "hardhat": "^2.19.2",
+    "hardhat-change-network": "^0.0.7",
+    "solidity-rlp": "^2.0.8"
+  },
+  "devDependencies": {
+    "@aave/core-v3": "^1.19.0",
+    "@commitlint/cli": "^18.4.3",
+    "@commitlint/config-conventional": "^18.4.3",
+    "@typescript-eslint/eslint-plugin": "^5.44.0",
+    "@typescript-eslint/parser": "^5.44.0",
+    "eslint-config-prettier": "^9.1.0",
+    "husky": "^8.0.3",
+    "patch-package": "^8.0.0",
+    "prettier": "^2.8.7",
+    "prettier-plugin-solidity": "^1.0.0",
+    "solhint": "^3.3.7",
+    "solhint-plugin-prettier": "^0.0.5",
+    "solidity-coverage": "^0.8.2"
+  }
+}

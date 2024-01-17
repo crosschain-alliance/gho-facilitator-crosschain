@@ -132,7 +132,7 @@ contract Vault is IVault, Committer, Prover {
         _collaterals[asset][account] -= collateralToLiquidate;
         IERC20(asset).transfer(liquidator, collateralToLiquidate);
 
-        _generateCommitment(abi.encode(FINALIZE_LIQUIDATION, asset, account, liquidator, collateralToLiquidate));
+        _generateCommitment(abi.encode(FINALIZE_LIQUIDATION, asset, account, liquidator, amount));
         emit Liquidated(asset, account, liquidator, collateralToLiquidate);
     }
 }

@@ -40,10 +40,10 @@ contract Facilitator is IFacilitator, Prover, Committer {
         address asset,
         address account,
         address liquidator,
-        uint256 amount,
-        Proof calldata proof
+        uint256 amount /*,
+        Proof calldata proof*/
     ) external {
-        _verifyProof(proof, abi.encode(FINALIZE_LIQUIDATION, asset, account, liquidator, amount));
+        //_verifyProof(proof, abi.encode(FINALIZE_LIQUIDATION, asset, account, liquidator, amount));
         GHO.burn(amount);
         emit FinalizedLiquidation(asset, account, liquidator, amount);
     }
@@ -58,8 +58,8 @@ contract Facilitator is IFacilitator, Prover, Committer {
     }
 
     /// @inheritdoc IFacilitator
-    function mint(address account, uint256 amount, Proof calldata proof) external {
-        _verifyProof(proof, abi.encode(MINT, account, amount));
+    function mint(address account, uint256 amount /*, Proof calldata proof*/) external {
+        //_verifyProof(proof, abi.encode(MINT, account, amount));
         GHO.mint(account, amount);
     }
 
@@ -68,10 +68,10 @@ contract Facilitator is IFacilitator, Prover, Committer {
         address asset,
         address account,
         address liquidator,
-        uint256 amount,
-        Proof calldata proof
+        uint256 amount /*,
+        Proof calldata proof*/
     ) external {
-        _verifyProof(proof, abi.encode(REVERT_LIQUIDATION, asset, account, liquidator, amount));
+        ///_verifyProof(proof, abi.encode(REVERT_LIQUIDATION, asset, account, liquidator, amount));
         GHO.transfer(liquidator, amount);
         emit RevertedLiquidation(asset, account, liquidator, amount);
     }

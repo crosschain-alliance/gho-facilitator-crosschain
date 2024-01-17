@@ -14,8 +14,9 @@ contract Vault is IVault, Committer, Prover {
     bytes32 public constant REVERT_LIQUIDATION = keccak256("REVERT_LIQUIDATION");
 
     uint256 public constant LTV = 8500; // 85%;
-    uint256 private constant ORACLE_PRICE_DIVISOR = 10 ** 8;
-    uint256 private constant LTV_DIVISOR = 10000;
+    uint256 public constant LIQUIDATION_BONUS = 500; // 5%
+    uint256 public constant ORACLE_PRICE_DIVISOR = 1e8;
+    uint256 public constant PERCENTAGE_DIVISOR = 10000;
 
     IPriceOracle public immutable PRICE_ORACLE;
     address public immutable GHO;
@@ -36,12 +37,15 @@ contract Vault is IVault, Committer, Prover {
     }
 
     /// @inheritdoc IVault
-    function canBeLiquidated(address asset, address account) public view returns (bool) {
+    function getAssetAccountData(address asset, address account) public view returns (bool, uint256, uint256) {
         uint256 priceCollateralUsd = PRICE_ORACLE.getAssetPrice(address(asset));
         uint256 priceGhoUsd = PRICE_ORACLE.getAssetPrice(GHO);
-        uint256 debtUsd = (_debts[asset][account] * priceGhoUsd) / ORACLE_PRICE_DIVISOR;
+        uint256 debt = _debts[asset][account];
+        uint256 debtUsd = (debt * priceGhoUsd) / ORACLE_PRICE_DIVISOR;
+        uint256 collateral = _collaterals[asset][account];
         uint256 collateralUsd = (_collaterals[asset][account] * priceCollateralUsd) / ORACLE_PRICE_DIVISOR;
-        return debtUsd > (collateralUsd * LTV) / LTV_DIVISOR;
+        bool canBeLiquidated = debtUsd > (collateralUsd * LTV) / PERCENTAGE_DIVISOR;
+        return (canBeLiquidated, debt, collateral);
     }
 
     // @inheritdoc IVault
@@ -49,36 +53,17 @@ contract Vault is IVault, Committer, Prover {
         IERC20(asset).transferFrom(msg.sender, address(this), amount);
         _collaterals[asset][account] += amount;
 
-        uint256 assetPriceUsd = PRICE_ORACLE.getAssetPrice(address(asset));
-        uint256 priceGhoUsd = PRICE_ORACLE.getAssetPrice(GHO);
-        uint256 amountInUsd = (assetPriceUsd * amount) / ORACLE_PRICE_DIVISOR;
-        amount = (amountInUsd * ORACLE_PRICE_DIVISOR) / priceGhoUsd;
+        // TODO: handle different number of decimals
 
-        uint256 amountToMint = (amount * LTV) / LTV_DIVISOR;
+        uint256 collateralPriceUsd = PRICE_ORACLE.getAssetPrice(address(asset));
+        uint256 priceGhoUsd = PRICE_ORACLE.getAssetPrice(GHO);
+        amount = (amount * collateralPriceUsd) / priceGhoUsd;
+
+        uint256 amountToMint = (amount * LTV) / PERCENTAGE_DIVISOR;
         _debts[asset][account] += amountToMint;
 
         _generateCommitment(abi.encode(MINT, account, amountToMint));
         emit AuthorizedMint(account, amountToMint);
-    }
-
-    // @inheritdoc IVault
-    function liquidate(
-        address asset,
-        address account,
-        address liquidator,
-        uint256 amount,
-        Proof calldata proof
-    ) external {
-        _verifyProof(proof, abi.encode(INIT_LIQUIDATION, asset, account, liquidator, amount));
-        if (!canBeLiquidated(asset, account)) {
-            _generateCommitment(abi.encode(REVERT_LIQUIDATION, asset, account, liquidator, amount));
-            return;
-        }
-
-        // TODO: liquidation
-
-        _generateCommitment(abi.encode(FINALIZE_LIQUIDATION, asset, account, liquidator, amount));
-        emit Liquidated(asset, account, liquidator, amount);
     }
 
     // @inheritdoc IVault
@@ -92,24 +77,62 @@ contract Vault is IVault, Committer, Prover {
     function verifyBurnAndReleaseCollateral(
         address asset,
         address account,
-        uint256 amount,
-        Proof calldata proof
+        uint256 amount /*,
+        Proof calldata proof*/
     ) external {
-        _verifyProof(proof, abi.encode(BURN, asset, account, amount));
+        //_verifyProof(proof, abi.encode(BURN, asset, account, amount));
 
         // TODO: avoid to revert if the tx fails in order to don't have nonce issues
         if (amount > _debts[asset][account]) revert InvalidAmount(amount, _debts[asset][account]);
 
         uint256 priceCollateralUsd = PRICE_ORACLE.getAssetPrice(address(asset));
         uint256 priceGhoUsd = PRICE_ORACLE.getAssetPrice(GHO);
-        uint256 amountUsd = (amount * priceGhoUsd) / ORACLE_PRICE_DIVISOR;
-        uint256 collateralRequested = (amountUsd * ORACLE_PRICE_DIVISOR) / priceCollateralUsd;
+        uint256 collateralRequested = (amount * priceGhoUsd) / priceCollateralUsd;
 
         _debts[asset][account] -= amount;
         _collaterals[asset][account] -= collateralRequested;
-        //if debtsLeftUsd < ltv * collateralUsd -> possible liquidation
 
         IERC20(asset).transfer(account, collateralRequested);
         emit CollateralReleased(account, amount);
+    }
+
+    // @inheritdoc IVault
+    function verifiyInitLiquidationAndLiquidate(
+        address asset,
+        address account,
+        address liquidator,
+        uint256 amount /*,
+        Proof calldata proof*/
+    ) external {
+        //_verifyProof(proof, abi.encode(INIT_LIQUIDATION, asset, account, liquidator, amount));
+        (bool canBeLiquidated, , ) = getAssetAccountData(asset, account);
+        if (!canBeLiquidated) {
+            _generateCommitment(abi.encode(REVERT_LIQUIDATION, asset, account, liquidator, amount));
+            return;
+        }
+
+        // TODO: handle different number of decimals
+
+        uint256 priceCollateralUsd = PRICE_ORACLE.getAssetPrice(address(asset));
+        uint256 priceGhoUsd = PRICE_ORACLE.getAssetPrice(GHO);
+        uint256 baseCollateral = (amount * priceGhoUsd) / priceCollateralUsd;
+
+        uint256 accountCollateral = _collaterals[asset][account];
+        uint256 collateralToLiquidate = 0;
+
+        uint256 maxCollateralToLiquidate = baseCollateral + ((baseCollateral * LIQUIDATION_BONUS) / PERCENTAGE_DIVISOR);
+        if (maxCollateralToLiquidate > accountCollateral) {
+            collateralToLiquidate = accountCollateral;
+            _debts[asset][account] = 0;
+        } else {
+            collateralToLiquidate = maxCollateralToLiquidate;
+            _debts[asset][account] -= amount;
+        }
+
+        _collaterals[asset][account] -= collateralToLiquidate;
+        IERC20(asset).transfer(liquidator, collateralToLiquidate);
+
+        _generateCommitment(abi.encode(FINALIZE_LIQUIDATION, asset, account, liquidator, collateralToLiquidate));
+        emit Liquidated(asset, account, liquidator, collateralToLiquidate);
     }
 }

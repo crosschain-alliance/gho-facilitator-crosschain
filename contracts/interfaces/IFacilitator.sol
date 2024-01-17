@@ -21,19 +21,19 @@ interface IFacilitator is IGhoFacilitator, IProver {
         address asset,
         address account,
         address liquidator,
-        uint256 amount,
-        Proof calldata proof
+        uint256 amount /*,
+        Proof calldata proof*/
     ) external;
 
     function initLiquidation(address asset, address account, uint256 amount) external;
 
-    function mint(address account, uint256 amount, Proof calldata proof) external;
+    function mint(address account, uint256 amount /*, Proof calldata proof*/) external;
 
     function revertLiquidation(
         address asset,
         address account,
         address liquidator,
-        uint256 amount,
-        Proof calldata proof
+        uint256 amount /*,
+        Proof calldata proof*/
     ) external;
 }

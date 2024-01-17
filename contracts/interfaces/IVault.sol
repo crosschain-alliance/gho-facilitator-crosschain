@@ -16,24 +16,24 @@ interface IVault is IProver {
     error InvalidAmount(uint256 amount, uint256 maxAmount);
     error ImpossibleToWithdrawCollateralLeft();
 
-    function canBeLiquidated(address asset, address account) external view returns (bool);
+    function getAssetAccountData(address asset, address account) external view returns (bool, uint256, uint256);
 
     function mint(address asset, address account, uint256 amount) external;
-
-    function liquidate(
-        address asset,
-        address account,
-        address liquidator,
-        uint256 amount,
-        Proof calldata proof
-    ) external;
 
     function withdrawLeftCollateral(address asset, address account) external;
 
     function verifyBurnAndReleaseCollateral(
         address asset,
         address account,
-        uint256 amount,
-        Proof calldata proof
+        uint256 amount //,
+        //Proof calldata proof
+    ) external;
+
+    function verifiyInitLiquidationAndLiquidate(
+        address asset,
+        address account,
+        address liquidator,
+        uint256 amount //,
+        //Proof calldata proof
     ) external;
 }

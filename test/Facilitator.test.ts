@@ -75,14 +75,14 @@ describe("Facilitator", () => {
     vault = await Vault.deploy(
       priceOracle.address,
       gho.address,
+      fakeGiriGiriBashi.address,
       currentChainId,
       currentChainId,
       0,
-      fakeGiriGiriBashi.address,
     )
     user1 = await ethers.getImpersonatedSigner(USER_1_ADDRESS)
     weth = await Token.attach(WETH)
-    facilitator = await Facilitator.deploy(currentChainId, currentChainId, fakeGiriGiriBashi.address, gho.address)
+    facilitator = await Facilitator.deploy(fakeGiriGiriBashi.address, gho.address, currentChainId, currentChainId, 0)
 
     await vault.setAccount(facilitator.address)
     await facilitator.setAccount(vault.address)

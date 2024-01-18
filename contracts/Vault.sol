@@ -25,14 +25,14 @@ contract Vault is IVault, Committer, Prover {
     mapping(address => mapping(address => uint256)) private _debts;
 
     constructor(
-        address oracle,
+        address priceOracle,
         address gho,
-        uint256 targetChainId,
+        address giriGiriBashi,
         uint256 sourceChainId,
-        uint256 commitmentsSlot,
-        address giriGiriBashi
+        uint256 targetChainId,
+        uint256 commitmentsSlot
     ) Committer(targetChainId) Prover(sourceChainId, commitmentsSlot, giriGiriBashi) {
-        PRICE_ORACLE = IPriceOracle(oracle);
+        PRICE_ORACLE = IPriceOracle(priceOracle);
         GHO = gho;
     }
 

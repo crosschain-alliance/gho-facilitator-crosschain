@@ -17,11 +17,12 @@ contract Facilitator is IFacilitator, Prover, Committer {
     IGhoToken public immutable GHO;
 
     constructor(
+        address giriGiriBashi,
+        address gho,
         uint256 sourceChainId,
         uint256 targetChainId,
-        address giriGiriBashi,
-        address gho
-    ) Prover(sourceChainId, 0, giriGiriBashi) Committer(targetChainId) {
+        uint256 commitmentsSlot
+    ) Prover(sourceChainId, commitmentsSlot, giriGiriBashi) Committer(targetChainId) {
         GHO = IGhoToken(gho);
     }
 

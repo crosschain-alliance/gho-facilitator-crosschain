@@ -72,13 +72,7 @@ describe("Facilitator", () => {
     pool = await Pool.attach(AAVE_V3_POOL_ADDRESS)
     gho = await MockGho.deploy()
     priceOracle = await PriceOracle.deploy()
-    vault = await Vault.deploy(
-      priceOracle.address,
-      gho.address,
-      fakeGiriGiriBashi.address,
-      currentChainId,
-      0,
-    )
+    vault = await Vault.deploy(priceOracle.address, gho.address, fakeGiriGiriBashi.address, currentChainId, 0)
     user1 = await ethers.getImpersonatedSigner(USER_1_ADDRESS)
     weth = await Token.attach(WETH)
     facilitator = await Facilitator.deploy(fakeGiriGiriBashi.address, gho.address, currentChainId, 0)
@@ -103,7 +97,7 @@ describe("Facilitator", () => {
     const {
       args: { amount: ghoAmount },
     } = mintEvents.find(({ event }) => event === "AuthorizedMint")
-    await facilitator.mint(user1.address, ghoAmount)
+    await facilitator.verifyProofAndMint(user1.address, ghoAmount)
 
     const ghoAmountToBurn = ghoAmount //utils.parseEther("250000")
     await gho.connect(user1).approve(facilitator.address, ghoAmountToBurn)
@@ -122,7 +116,7 @@ describe("Facilitator", () => {
     const {
       args: { amount: ghoAmount },
     } = mintEvents.find(({ event }) => event === "AuthorizedMint")
-    await facilitator.mint(user1.address, ghoAmount)
+    await facilitator.verifyProofAndMint(user1.address, ghoAmount)
     // ETH price -> 2500$, collateral = 100ETH (250k$) -> debt = 85% * 250k$ = 212500$
 
     await priceOracle.setAssetPrice(aToken.address, "10000000000")
@@ -148,7 +142,7 @@ describe("Facilitator", () => {
     const {
       args: { amount: ghoAmount },
     } = mintEvents.find(({ event }) => event === "AuthorizedMint")
-    await facilitator.mint(user1.address, ghoAmount)
+    await facilitator.verifyProofAndMint(user1.address, ghoAmount)
     // ETH price -> 2500$, collateral = 100ETH (250k$) -> debt = 85% * 250k$ = 212500$
 
     await priceOracle.setAssetPrice(aToken.address, "210000000000")

@@ -58,12 +58,6 @@ contract Facilitator is IFacilitator, Prover, Committer {
     }
 
     /// @inheritdoc IFacilitator
-    function mint(address account, uint256 amount /*, Proof calldata proof*/) external {
-        //_verifyProof(proof, abi.encode(MINT, account, amount));
-        GHO.mint(account, amount);
-    }
-
-    /// @inheritdoc IFacilitator
     function revertLiquidation(
         address asset,
         address account,
@@ -77,4 +71,10 @@ contract Facilitator is IFacilitator, Prover, Committer {
     }
 
     function updateGhoTreasury(address newGhoTreasury) external {}
+
+    /// @inheritdoc IFacilitator
+    function verifyProofAndMint(address account, uint256 amount /*, Proof calldata proof*/) external {
+        //_verifyProof(proof, abi.encode(MINT, account, amount));
+        GHO.mint(account, amount);
+    }
 }

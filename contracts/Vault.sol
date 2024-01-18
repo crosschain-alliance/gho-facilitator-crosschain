@@ -28,10 +28,9 @@ contract Vault is IVault, Committer, Prover {
         address priceOracle,
         address gho,
         address giriGiriBashi,
-        uint256 sourceChainId,
         uint256 targetChainId,
         uint256 commitmentsSlot
-    ) Committer(targetChainId) Prover(sourceChainId, commitmentsSlot, giriGiriBashi) {
+    ) Committer(targetChainId) Prover(targetChainId, commitmentsSlot, giriGiriBashi) {
         PRICE_ORACLE = IPriceOracle(priceOracle);
         GHO = gho;
     }

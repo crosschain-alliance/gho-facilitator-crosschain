@@ -76,10 +76,10 @@ contract Vault is IVault, Committer, Prover {
     function verifyBurnAndReleaseCollateral(
         address asset,
         address account,
-        uint256 amount /*,
-        Proof calldata proof*/
+        uint256 amount,
+        Proof calldata proof
     ) external {
-        //_verifyProof(proof, abi.encode(BURN, asset, account, amount));
+        _verifyProof(proof, abi.encode(BURN, asset, account, amount));
 
         // TODO: avoid to revert if the tx fails in order to don't have nonce issues
         if (amount > _debts[asset][account]) revert InvalidAmount(amount, _debts[asset][account]);
@@ -100,10 +100,10 @@ contract Vault is IVault, Committer, Prover {
         address asset,
         address account,
         address liquidator,
-        uint256 amount /*,
-        Proof calldata proof*/
+        uint256 amount,
+        Proof calldata proof
     ) external {
-        //_verifyProof(proof, abi.encode(INIT_LIQUIDATION, asset, account, liquidator, amount));
+        _verifyProof(proof, abi.encode(INIT_LIQUIDATION, asset, account, liquidator, amount));
         (bool canBeLiquidated, , ) = getAssetAccountData(asset, account);
         if (!canBeLiquidated) {
             _generateCommitment(abi.encode(REVERT_LIQUIDATION, asset, account, liquidator, amount));

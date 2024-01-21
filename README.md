@@ -13,6 +13,10 @@ A fully customizable framework for building cross-chain GHO facilitators.
 
 ***
 
+### IMPORTANT: if you are looking for the DApp/UI, it's here: https://github.com/crosschain-alliance/gho-fragola-ui
+
+***
+
 &nbsp;
 
 ## How it works

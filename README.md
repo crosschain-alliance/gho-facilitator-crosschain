@@ -1,3 +1,4 @@
+![FRAGOLA](./resources/logo_full.jpg)
 # FRAGOLA - the FRAmework for GhO cross-Ledger Access
 
 

@@ -1,14 +1,13 @@
 ![FRAGOLA](./resources/logo_full.jpg)
-# FRAGOLA - the FRAmework for GhO cross-Ledger Access
+# 👻 🍓 FRAGOLA, a FRAmework for GhO cross-Ledger Access 
 
 
 [![GitHub license](https://img.shields.io/badge/license-MIT.svg)](https://github.com/crosschain-alliance/gho-fragola/blob/develop/LICENSE.md)
 
-![alt text](./resources/diagram.png)
 
 ## Overview
 
-...
+A fully customizable framework for building cross-chain GHO facilitators.
 
 &nbsp;
 
@@ -18,7 +17,7 @@
 
 ## How it works
 
-...
+![alt text](./resources/diagram.png)
 
 
 &nbsp;

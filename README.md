@@ -1,7 +1,7 @@
-# GHO Cross Chain Facilitator
+# FRAGOLA - the FRAmework for GhO cross-Ledger Access
 
 
-[![GitHub license](https://img.shields.io/badge/license-MIT.svg)](https://github.com/crosschain-alliance/gho-facilitator-crosschain/blob/develop/LICENSE.md)
+[![GitHub license](https://img.shields.io/badge/license-MIT.svg)](https://github.com/crosschain-alliance/gho-fragola/blob/develop/LICENSE.md)
 
 ![alt text](./resources/diagram.png)
 
@@ -35,8 +35,8 @@ Ensure you have [Node.js](https://nodejs.org/) and [npm](https://www.npmjs.com/)
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/crosschain-alliance/gho-facilitator-crosschain.git
-cd gho-facilitator-crosschain
+git clone https://github.com/crosschain-alliance/gho-fragola.git
+cd gho-fragola
 ```
 
 ### Install Dependencies
@@ -93,7 +93,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 &nbsp;
 ## Contact
 
-For any inquiries, issues, or feedback, please [raise an issue on GitHub](https://github.com/crosschain-alliance/gho-facilitator-crosschain/issues) or contact the team through our [official website](#).
+For any inquiries, issues, or feedback, please [raise an issue on GitHub](https://github.com/crosschain-alliance/gho-fragola/issues) or contact the team through our [official website](#).
 
 &nbsp;
 
